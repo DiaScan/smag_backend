@@ -62,8 +62,9 @@ async def register_user(user: User):
 
 
 @app.post('/login_user')
-async def login_user():
-    pass
+async def login_user(user: User):
+    res = db.login(user.username, user.password)
+    return {"message": res}
 
 
 if __name__ == '__main__':
