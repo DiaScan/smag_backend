@@ -4,20 +4,31 @@ import pandas as pd
 from apyori import apriori
 
 
-dataset = [['Milk','Onion', 'Bread', 'Kidney Beans','Eggs','Bread'],
-           ['Fish','Onion','Bread','Kidney Beans','Eggs','Bread'],
-           ['Milk', 'Apples', 'Kidney Beans’, ‘Eggs'],
-           ['Milk', 'Sugar', 'Tea Leaves', 'Kidney Beans', 'Bread'],
-           ['Tea Leaves','Onion','Kidney Beans', 'Ice cream', 'Eggs'],]
+# dataset = [['Milk','Onion', 'Bread', 'Kidney Beans','Eggs','Bread'],
+#            ['Fish','Onion','Bread','Kidney Beans','Eggs','Bread'],
+#            ['Milk', 'Apples', 'Kidney Beans’, ‘Eggs'],
+#            ['Milk', 'Sugar', 'Tea Leaves', 'Kidney Beans', 'Bread'],
+#            ['Tea Leaves','Onion','Kidney Beans', 'Ice cream', 'Eggs'],]
 
 
 
-def get_frequent_patterns():
+def get_frequent_patterns(transactions):
+    # print(transactions[0])
+    dataset = []
+    for transaction in transactions:
+        item_list = transaction['item_list'][1:-1]
+        items = item_list.split(',')
+        cleaned_items = [item.strip() for item in items]
+        dataset.append(cleaned_items)
+
+    # print(dataset)
+    # return ''
+
     transacts = []
     for i in range(len(dataset)):
         transacts.append([dataset[i][j] for j in range(len(dataset[i]))])
 
-    rule = apriori(transactions = transacts, min_support = 0.03, min_confidence = 0.02, min_lift = 3, min_length = 2, max_length = 1000)
+    rule = apriori(transactions = transacts, min_support = 0.03, min_confidence = 0.025, min_lift = 3, min_length = 2, max_length = 1000)
     results=list(rule)
 
     def inspect(results):
@@ -48,4 +59,4 @@ def get_frequent_patterns():
 
     return patterns
 
-get_frequent_patterns()
+# get_frequent_patterns()

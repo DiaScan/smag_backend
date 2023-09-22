@@ -1,9 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 from mltoolkit import apriori
-import os
 from store import db
 
 
@@ -46,7 +45,8 @@ async def hello():
 
 @app.get('/frequent_patterns')
 async def frequent_patterns():
-    frequent_patterns = apriori.get_frequent_patterns()
+    transactions = db.get_all_transactions()
+    frequent_patterns = apriori.get_frequent_patterns(transactions)
     return frequent_patterns
 
 
@@ -66,6 +66,19 @@ async def login_user(user: User):
     res = db.login(user.username, user.password)
     return {"message": res}
 
+@app.get('/transactions')
+async def get_all_transactions():
+    return db.get_all_transactions()
+
+@app.post('/file')
+async def upload_file(file: UploadFile):
+    # file_data = parse_file(file.file)
+    pass
+
+@app.get('/shops')
+async def get_shops(user_id):
+    user_shops = db.get_all_shops(user_id)
+    return user_shops
 
 if __name__ == '__main__':
     run_init()

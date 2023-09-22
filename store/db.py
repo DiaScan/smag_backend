@@ -19,9 +19,14 @@ def init_client():
         supabase_url=SUPABASE_PUBLIC_URL, supabase_key=SUPABASE_SERVICE_ROLE)
 
 
-def get_all_shops():
-    shop_records = supabase.table('shop').select("*").execute()
-    return shop_records
+def get_all_shops(user_id):
+    shop_records = supabase.table('shop').select("*").eq('user_id', user_id).execute()
+    return shop_records.data
+
+def get_all_transactions():
+    init_client()
+    transactions = supabase.table('transaction').select("*").execute()
+    return transactions.data
 
 
 def get_all_users():
@@ -81,6 +86,6 @@ def login(username: str, password: str):
         if not is_valid_password(password, db_password):
             return "invalid password"
         else:
-            return "login successful"
+            return {'user_id': userdata[0]['user_id'], 'message': 'login successful'}
     except:
         return "error login"
