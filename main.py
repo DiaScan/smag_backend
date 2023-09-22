@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 from store import db
+from mltoolkit import apriori
 
 app = FastAPI()
 
@@ -22,7 +23,14 @@ async def hello():
     return {'message': 'go to /docs to test the routes'}
 
 
+@app.get('/frequent_patterns')
+async def frequent_patterns():
+    frequent_patterns = apriori.get_frequent_patterns()
+    return frequent_patterns
+
+
+
 if __name__ == '__main__':
-    run_init()
+    # run_init()
     run_tests()
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
