@@ -48,7 +48,7 @@ async def hello():
 async def frequent_patterns():
     frequent_patterns = apriori.get_frequent_patterns()
     return frequent_patterns
-
+    
 
 class User(BaseModel):
     username: str
