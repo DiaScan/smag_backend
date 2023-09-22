@@ -28,8 +28,8 @@ def run_init():
         import env
         print('Running init')
         env.init()
-    except (e) as e:
-        print(e)
+    except:
+        print("NO ENV")
     db.init_client()
 
 
@@ -48,7 +48,7 @@ async def hello():
 async def frequent_patterns():
     frequent_patterns = apriori.get_frequent_patterns()
     return frequent_patterns
-    
+
 
 class User(BaseModel):
     username: str
