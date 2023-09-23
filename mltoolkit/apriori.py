@@ -13,14 +13,17 @@ from apyori import apriori
 
 
 def get_frequent_patterns(transactions):
+    """Takes input as the plain transaction object"""
     # print(transactions[0])
     dataset = []
     for transaction in transactions:
-        item_list = transaction['item_list'][1:-1]
+        item_list = transaction['item_list']
         items = item_list.split(',')
         cleaned_items = [item.strip() for item in items]
         dataset.append(cleaned_items)
 
+    # for row in dataset:
+        # print(row)
     # print(dataset)
     # return ''
 

@@ -1,9 +1,12 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from uuid import uuid4
 import uvicorn
 from mltoolkit import apriori
 from store import db
+from utils import csv_parser
+
 
 
 app = FastAPI()
@@ -33,7 +36,7 @@ def run_init():
 
 
 def run_tests():
-    print(db.get_all_shops().data)
+    print(db.get_all_shops_of_user().data)
     print(db.get_all_users().data)
     return
 
@@ -50,14 +53,26 @@ async def frequent_patterns():
     return frequent_patterns
 
 
+@app.get('/get_suggested_patterns')
+async def frequent_pattterns_by_shop(shop_id):
+    shop_details = db.get_shop_details(shop_id)
+    transactions = db.get_all_transactions_of_shop(shop_id)
+    frequent_patterns = apriori.get_frequent_patterns(transactions)
+    return {'shop_details': shop_details, 'buy_patterns' : frequent_patterns}
+
 class User(BaseModel):
     username: str
     password: str
 
+class Shop(BaseModel):
+    user_id: str
+    shop_name: str
+    district: str
+    state: str
 
 @app.post('/register_user')
 async def register_user(user: User):
-    res = db.add_new_user(user.username, user.password)
+    res = db.add_new_shop(user.username, user.password)
     return {"message": res}
 
 
@@ -70,15 +85,26 @@ async def login_user(user: User):
 async def get_all_transactions():
     return db.get_all_transactions()
 
-@app.post('/file')
-async def upload_file(file: UploadFile):
-    # file_data = parse_file(file.file)
-    pass
+@app.post('/add_transactions')
+async def upload_file(file: UploadFile, shop_id):
+    file_data = csv_parser.parse_file(file)
+    db.insert_transactions(shop_id, file_data)
+    return {"message": file_data}
 
 @app.get('/shops')
 async def get_shops(user_id):
-    user_shops = db.get_all_shops(user_id)
+    user_shops = db.get_all_shops_of_user(user_id)
     return user_shops
+
+@app.get('/shop')
+async def get_shop_details(shop_id):
+    shop_details = db.get_shop_details(shop_id)
+    return {'shop_details': shop_details}
+
+@app.post('/shop')
+async def add_shop(shop: Shop):
+    res = db.add_new_shop(shop.shop_name, shop.district, shop.state, shop.user_id)
+    return {'message': res}
 
 if __name__ == '__main__':
     run_init()

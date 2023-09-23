@@ -19,7 +19,7 @@ def init_client():
         supabase_url=SUPABASE_PUBLIC_URL, supabase_key=SUPABASE_SERVICE_ROLE)
 
 
-def get_all_shops(user_id):
+def get_all_shops_of_user(user_id):
     shop_records = supabase.table('shop').select("*").eq('user_id', user_id).execute()
     return shop_records.data
 
@@ -28,11 +28,21 @@ def get_all_transactions():
     transactions = supabase.table('transaction').select("*").execute()
     return transactions.data
 
+def get_all_transactions_of_shop(shop_id):
+    init_client()
+    transactions = supabase.table('transaction').select("*").eq('shop_id', shop_id).execute()
+    return transactions.data
+
 
 def get_all_users():
     user_records = supabase.table('user').select("*").execute()
     return user_records
 
+def get_shop_details(shop_id):
+    init_client()
+    shop_details = supabase.table('shop').select("*").eq('shop_id', shop_id).execute()
+    res = shop_details.data[0]
+    return {'shop_id': shop_id, 'shop_name': res['shop_name'], 'district': res['district'], 'state': res['state']}
 
 def user_exists(username):
     try:
@@ -73,6 +83,22 @@ def add_new_user(username: str, password: str):
     except postgrest.exceptions.APIError as err:
         print(err.message)
         return "error adding user"
+    
+
+def add_new_shop(shop_name: str, district: str, state: str, user_id: any):
+    init_client()
+    try:
+        supabase.table('shop').insert({
+            'shop_name': shop_name,
+            'district': district.lower(),
+            'state': state.lower(),
+            'user_id': user_id
+        }).execute()
+
+        return "shop successfully added"
+    except postgrest.exceptions.APIError as err:
+        print(err.message)
+        return "error adding shop"
 
 
 def login(username: str, password: str):
@@ -89,3 +115,14 @@ def login(username: str, password: str):
             return {'user_id': userdata[0]['user_id'], 'message': 'login successful'}
     except:
         return "error login"
+    
+def insert_transactions(shop_id, transactions):
+    init_client()
+    try:
+        for transaction in transactions:
+            transaction['shop_id'] = shop_id
+            res = supabase.table('transaction').insert(transaction).execute()
+        return res
+    except postgrest.exceptions.APIError as err:
+        print(err)
+        return "error inserting transaction"
