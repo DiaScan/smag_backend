@@ -60,7 +60,8 @@ def get_frequent_patterns(transactions):
     for index in df.index:
         patterns.append({'src_items' : [df['Left_Hand_Side'][index]], 'rec_items' : [split_rec(df['Right_Hand_Side'][index])], 'confidence' : df['Confidence'][index]})
 
-
-    return patterns
+    patterns.sort(key = lambda x: x['confidence'], reverse=True)
+    limit = min(len(patterns), 10)
+    return patterns[:limit]
 
 # get_frequent_patterns()
