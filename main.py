@@ -157,6 +157,15 @@ async def add_improve_low_product_sales(product_name: str):
     res = gpt.improve_low_product_sales(product_name)
     return {'strategy': res}
 
+
+@app.get('/start_new_store_at_location')
+async def start_new_store_at_location(location : str):
+    transactions = db.get_transactions_by_location(location)
+    top_products = frequency_metric.get_top_k_most_sold_items(3, transactions)
+    res = gpt.start_new_store_at_location(top_products, location)
+    return {'strategy': res, 'top_products': top_products}
+
+
 if __name__ == '__main__':
     run_init()
     # run_tests()
