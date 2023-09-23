@@ -44,7 +44,7 @@ def start_new_store_at_location(top_products, location):
                 "role": "system",
                 "content": "You are an intelligent marketing agent with vast experience running small small to medium scale supermarkets and stores, help answer the following question based on your marketing knowledge while also taking into account the economic feasibility by focussing more on in store appliable solutions and not online marketing and expensive options",
                 "role": "user",
-                "content": f"Provide suggestion on how to start a store at location {location} where the top selling products are {top_products} in under in 50 words"
+                "content": f"Provide suggestion on how to start a store at location {location} where the top selling products are {top_products} in under in 100 words also provide the answer as points separate each line by using the special character ~~~"
             }
         ]
     )
