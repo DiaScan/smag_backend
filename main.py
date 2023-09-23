@@ -74,7 +74,7 @@ async def frequent_pattterns_by_shop(shop_id):
 
 @app.post('/register_user')
 async def register_user(user: User):
-    res = db.add_new_shop(user.username, user.password)
+    res = db.add_new_user(user.username, user.password)
     return {"message": res}
 
 
@@ -163,7 +163,7 @@ async def start_new_store_at_location(location : str):
     transactions = db.get_transactions_by_location(location)
     top_products = frequency_metric.get_top_k_most_sold_items(3, transactions)
     res = gpt.start_new_store_at_location(top_products, location)
-    return {'strategy': res, 'top_products': top_products}
+    return {'strategy': res, f'top_products in {location}': top_products}
 
 
 if __name__ == '__main__':
