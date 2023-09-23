@@ -5,6 +5,7 @@ import uvicorn
 from mltoolkit import apriori, frequency_metric
 from store import db
 from utils import csv_parser
+from wrapper import gpt
 import datetime as dt
 
 
@@ -144,6 +145,16 @@ async def get_top_items_by_time(time: str):
 async def add_shop(shop: Shop):
     res = db.add_new_shop(shop.shop_name, shop.district, shop.state, shop.user_id)
     return {'message': res}
+
+@app.get('/improve_top_product_sales')
+async def add_improve_top_product_sales(product_name: str):
+    res = gpt.improve_top_product_sales(product_name)
+    return {'strategy': res}
+
+@app.get('/improve_low_product_sales')
+async def add_improve_low_product_sales(product_name: str):
+    res = gpt.improve_low_product_sales(product_name)
+    return {'strategy': res}
 
 if __name__ == '__main__':
     run_init()
