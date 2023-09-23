@@ -118,6 +118,14 @@ async def top_items_by_store(shop_id):
     return {'top_sold_items': res, 'shop_details': shop_details }
 
 
+@app.get('/worst_items_by_store')
+async def worst_items_by_store(shop_id):
+    transactions = db.get_all_transactions_of_shop(shop_id)
+    res = frequency_metric.get_bottom_k_most_sold_items(3, transactions)
+    shop_details = db.get_shop_details(shop_id)
+    return {'bottom_sold_items': res, 'shop_details': shop_details }
+
+
 @app.get('/top_items_by_time')
 async def get_top_items_by_time(time: str):
     year, month, date = time.split('-')
