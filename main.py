@@ -151,6 +151,7 @@ async def add_improve_top_product_sales(product_name: str):
     res = gpt.improve_top_product_sales(product_name)
     return {'strategy': res}
 
+
 @app.get('/improve_low_product_sales')
 async def add_improve_low_product_sales(product_name: str):
     res = gpt.improve_low_product_sales(product_name)

@@ -20,10 +20,12 @@ def init_client():
 
 
 def get_all_shops_of_user(user_id):
+    init_client()
     shop_records = supabase.table('shop').select("*").eq('user_id', user_id).execute()
     return shop_records.data
 
 def get_all_shops():
+    init_client()
     shop_records = supabase.table('shop').select('*').execute()
     return shop_records.data
 
@@ -39,6 +41,7 @@ def get_all_transactions_of_shop(shop_id):
 
 
 def get_all_users():
+    init_client()
     user_records = supabase.table('user').select("*").execute()
     return user_records.data
 
