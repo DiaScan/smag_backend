@@ -64,4 +64,3 @@ def get_frequent_patterns(transactions):
     limit = min(len(patterns), 10)
     return patterns[:limit]
 
-# get_frequent_patterns()
