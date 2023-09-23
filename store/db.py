@@ -23,6 +23,10 @@ def get_all_shops_of_user(user_id):
     shop_records = supabase.table('shop').select("*").eq('user_id', user_id).execute()
     return shop_records.data
 
+def get_all_shops():
+    shop_records = supabase.table('shop').select('*').execute()
+    return shop_records.data
+
 def get_all_transactions():
     init_client()
     transactions = supabase.table('transaction').select("*").execute()
@@ -36,7 +40,7 @@ def get_all_transactions_of_shop(shop_id):
 
 def get_all_users():
     user_records = supabase.table('user').select("*").execute()
-    return user_records
+    return user_records.data
 
 def get_shop_details(shop_id):
     init_client()
@@ -126,3 +130,21 @@ def insert_transactions(shop_id, transactions):
     except postgrest.exceptions.APIError as err:
         print(err)
         return "error inserting transaction"
+    
+
+def get_transactions_by_location(location):
+    init_client()
+    response = supabase.table('transaction').select("*").execute()
+    transactions = response.data
+
+    shop_details = get_all_shops()
+    shop_to_location = {}
+    for shop in shop_details:
+        shop_to_location[shop['shop_id']] = shop['district']
+
+    transactions_at_location = []
+    for transaction in transactions:
+        shop_id = transaction['shop_id']
+        if shop_to_location[shop_id] == location: transactions_at_location.append(transaction)
+
+    return transactions_at_location

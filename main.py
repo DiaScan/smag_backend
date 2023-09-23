@@ -1,12 +1,20 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from uuid import uuid4
 import uvicorn
-from mltoolkit import apriori
+from mltoolkit import apriori, frequency_metric
 from store import db
 from utils import csv_parser
 
+class User(BaseModel):
+    username: str
+    password: str
+
+class Shop(BaseModel):
+    user_id: str
+    shop_name: str
+    district: str
+    state: str
 
 
 app = FastAPI()
@@ -60,16 +68,6 @@ async def frequent_pattterns_by_shop(shop_id):
     frequent_patterns = apriori.get_frequent_patterns(transactions)
     return {'shop_details': shop_details, 'buy_patterns' : frequent_patterns}
 
-class User(BaseModel):
-    username: str
-    password: str
-
-class Shop(BaseModel):
-    user_id: str
-    shop_name: str
-    district: str
-    state: str
-
 @app.post('/register_user')
 async def register_user(user: User):
     res = db.add_new_shop(user.username, user.password)
@@ -100,6 +98,23 @@ async def get_shops(user_id):
 async def get_shop_details(shop_id):
     shop_details = db.get_shop_details(shop_id)
     return {'shop_details': shop_details}
+
+@app.get('/top_items_by_location')
+async def get_top_items_by_location(location: str):
+    transactions = db.get_transactions_by_location(location)
+    res = frequency_metric.get_top_k_most_sold_items(3, transactions)
+    return { 'top_sold_items': res }
+
+
+@app.get('/top_items_by_store')
+async def top_items_by_store(shop_id):
+    return {}
+
+
+@app.get('/top_items_by_time')
+async def get_top_items_by_time(time: str):
+    return {}
+
 
 @app.post('/shop')
 async def add_shop(shop: Shop):
