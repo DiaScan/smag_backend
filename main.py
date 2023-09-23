@@ -5,6 +5,9 @@ import uvicorn
 from mltoolkit import apriori, frequency_metric
 from store import db
 from utils import csv_parser
+import datetime as dt
+
+
 
 class User(BaseModel):
     username: str
@@ -103,17 +106,38 @@ async def get_shop_details(shop_id):
 async def get_top_items_by_location(location: str):
     transactions = db.get_transactions_by_location(location)
     res = frequency_metric.get_top_k_most_sold_items(3, transactions)
-    return { 'top_sold_items': res }
+    return { 'top_sold_items': res, 'location': location }
 
 
 @app.get('/top_items_by_store')
 async def top_items_by_store(shop_id):
-    return {}
+    transactions = db.get_all_transactions_of_shop(shop_id)
+    res = frequency_metric.get_top_k_most_sold_items(3, transactions)
+    shop_details = db.get_shop_details(shop_id)
+    return {'top_sold_items': res, 'shop_details': shop_details }
 
 
 @app.get('/top_items_by_time')
 async def get_top_items_by_time(time: str):
-    return {}
+    year, month, date = time.split('-')
+    lower_date, upper_date = max(1, int(date) - 5), min(30, int(date) + 5)
+    lower_full_date = ('-').join([str(lower_date), month, year])
+    upper_full_date = ('-').join([str(upper_date), month, year])
+
+    ld = dt.datetime.strptime(lower_full_date, "%d-%m-%Y")
+    ld = ld.date()
+    ld = ld.isoformat()
+
+    ud = dt.datetime.strptime(upper_full_date, "%d-%m-%Y")
+    ud = ud.date()
+    ud = ud.isoformat()
+
+
+    # print(upper_full_date, lower_full_date)
+    transactions = db.get_transactions_in_range(ld, ud)
+    if transactions is None: return {'messsage': 'insufficient data'}
+    res = frequency_metric.get_top_k_most_sold_items(3, transactions)
+    return {'top_sold_items': res}
 
 
 @app.post('/shop')

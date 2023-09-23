@@ -148,3 +148,9 @@ def get_transactions_by_location(location):
         if shop_to_location[shop_id] == location: transactions_at_location.append(transaction)
 
     return transactions_at_location
+
+
+def get_transactions_in_range(lower_time, upper_time):
+    init_client()
+    transactions_response = supabase.table('transaction').select('*').gte('date', lower_time).lte('date', upper_time).execute()
+    return transactions_response.data
