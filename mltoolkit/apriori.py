@@ -31,7 +31,7 @@ def get_frequent_patterns(transactions):
     for i in range(len(dataset)):
         transacts.append([dataset[i][j] for j in range(len(dataset[i]))])
 
-    rule = apriori(transactions = transacts, min_support = 0.03, min_confidence = 0.025, min_lift = 3, min_length = 2, max_length = 1000)
+    rule = apriori(transactions = transacts, min_support = 0.03, min_confidence = 0.35, min_lift = 3, min_length = 2, max_length = 1000)
     results=list(rule)
 
     def inspect(results):
@@ -59,6 +59,7 @@ def get_frequent_patterns(transactions):
         return split_items
     for index in df.index:
         patterns.append({'src_items' : [df['Left_Hand_Side'][index]], 'rec_items' : [split_rec(df['Right_Hand_Side'][index])], 'confidence' : df['Confidence'][index]})
+
 
     return patterns
 
